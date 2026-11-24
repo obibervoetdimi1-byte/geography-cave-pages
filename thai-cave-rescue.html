@@ -13,8 +13,8 @@
 <main class="page">
 <div class="gate" id="gate" hidden><form class="box" id="gform" autocomplete="off">
 <span class="tag">Exhibition game</span>
-<h2>Join the Wild Boars hunt!</h2>
-<p>12 Wild Boars are hiding around the exhibition. Find them, type their names on this page and score points. The explorer with the most points wins!</p>
+<h2>Find the 12 children!</h2>
+<p>12 Thai children are hiding around the exhibition. Find them, type their names on this page and score points. The explorer with the most points wins!</p>
 <label for="gname">Your name</label>
 <input id="gname" maxlength="20" placeholder="e.g. Lina or Team Tiger" required>
 <button id="gbtn">Start hunting</button>
@@ -81,10 +81,10 @@
 
 
 <section class="hunt" id="hunt">
-<div class="top"><div><span class="kick">Exhibition game</span><h2>The Wild Boars hunt</h2><p class="who">Playing as <b id="hname">&hellip;</b></p></div>
+<div class="top"><div><span class="kick">Exhibition game</span><h2>Find the 12 children</h2><p class="who">Playing as <b id="hname">&hellip;</b></p></div>
 <div class="score"><b id="htotal">0</b><em><strong id="hfound">0</strong> / 12 found</em></div></div>
-<p style="font-size:14.5px;opacity:.85;margin-top:12px">12 Wild Boars are hiding around the exhibition. Each one has his own name. Find them, type their names here and score 100 points each!</p>
-<form class="row" id="hform" autocomplete="off"><input id="hword" placeholder="Type a name you found" maxlength="30" autocapitalize="off" spellcheck="false" aria-label="Name of a Wild Boar"><button class="go" id="hgo">Check</button></form>
+<p style="font-size:14.5px;opacity:.85;margin-top:12px">12 Thai children are hiding around the exhibition. Each one has his own name. Find them, type their names here and score 100 points each!</p>
+<form class="row" id="hform" autocomplete="off"><input id="hword" placeholder="Type a name you found" maxlength="30" autocapitalize="off" spellcheck="false" aria-label="Name of a child"><button class="go" id="hgo">Check</button></form>
 <p class="msg" id="hmsg" aria-live="polite"></p>
 <div class="slots" id="hslots"><div class="slot" data-id="1"><i>1</i><span>???</span></div><div class="slot" data-id="2"><i>2</i><span>???</span></div><div class="slot" data-id="3"><i>3</i><span>???</span></div><div class="slot" data-id="4"><i>4</i><span>???</span></div><div class="slot" data-id="5"><i>5</i><span>???</span></div><div class="slot" data-id="6"><i>6</i><span>???</span></div><div class="slot" data-id="7"><i>7</i><span>???</span></div><div class="slot" data-id="8"><i>8</i><span>???</span></div><div class="slot" data-id="9"><i>9</i><span>???</span></div><div class="slot" data-id="10"><i>10</i><span>???</span></div><div class="slot" data-id="11"><i>11</i><span>???</span></div><div class="slot" data-id="12"><i>12</i><span>???</span></div></div>
 <div class="mini"><h3>Top explorers <small>live</small></h3><ol id="hboard"><li><span></span><span style="opacity:.6">Loading&hellip;</span><span></span></li></ol></div>
@@ -203,11 +203,11 @@ rpc('hunt_join',{p_name:n}).then(function(d){gbtn.disabled=false;if(!d.ok){gerr.
 me={id:d.id,secret:d.secret,name:d.name};save();closeGate();paint({total:0,found:[]});board();document.getElementById('hunt').scrollIntoView({behavior:'smooth',block:'start'})}).catch(function(){gbtn.disabled=false;gerr.textContent='No connection. Check your internet and try again.'})});
 hform.addEventListener('submit',function(e){e.preventDefault();if(!me){openGate();return}var w=hword.value.trim();if(!w)return;hgo.disabled=true;hmsg.className='msg';hmsg.textContent='Checking\u2026';
 rpc('hunt_claim',{p_id:me.id,p_secret:me.secret,p_word:w}).then(function(d){hgo.disabled=false;
-if(d.status==='new'){hmsg.className='msg ok';hmsg.textContent='Yes! You found '+d.figure+'. +'+d.points+' points!';hword.value='';if(navigator.vibrate)navigator.vibrate([30,40,30]);refreshMe();board();var s=document.querySelector('#hslots .slot[data-id="'+d.figure_id+'"]');if(s){s.classList.remove('pop');void s.offsetWidth;s.classList.add('pop')}if(d.found===12)hmsg.textContent='Amazing! You found all 12 Wild Boars!'}
+if(d.status==='new'){hmsg.className='msg ok';hmsg.textContent='Yes! You found '+d.figure+'. +'+d.points+' points!';hword.value='';if(navigator.vibrate)navigator.vibrate([30,40,30]);refreshMe();board();var s=document.querySelector('#hslots .slot[data-id="'+d.figure_id+'"]');if(s){s.classList.remove('pop');void s.offsetWidth;s.classList.add('pop')}if(d.found===12)hmsg.textContent='Amazing! You found all 12 children!'}
 else if(d.status==='already'){hmsg.className='msg same';hmsg.textContent='You already found '+d.figure+'. Keep looking!';hword.value=''}
 else if(d.status==='slow_down'){hmsg.className='msg bad';hmsg.textContent='Too many tries. Wait a minute and try again.'}
 else if(d.status==='unknown_player'){me=null;openGate()}
-else{hmsg.className='msg bad';hmsg.textContent='That is not one of the Wild Boars. Check the spelling!';if(navigator.vibrate)navigator.vibrate(60)}}).catch(function(){hgo.disabled=false;hmsg.className='msg bad';hmsg.textContent='No connection. Try again.'})});
+else{hmsg.className='msg bad';hmsg.textContent='That is not one of the 12 children. Check the spelling!';if(navigator.vibrate)navigator.vibrate(60)}}).catch(function(){hgo.disabled=false;hmsg.className='msg bad';hmsg.textContent='No connection. Try again.'})});
 document.getElementById('hswitch').addEventListener('click',function(e){e.preventDefault();if(!confirm('Start as a new player? The points of '+(me?me.name:'this player')+' stay on the scoreboard, but you will play with a new name.'))return;me=null;try{localStorage.removeItem(K)}catch(e){}gname.value='';openGate()});
 if(me){paint({total:0,found:[]});document.getElementById('hname').textContent=me.name;refreshMe()}else openGate();
 board();setInterval(function(){if(!document.hidden)board()},20000);
