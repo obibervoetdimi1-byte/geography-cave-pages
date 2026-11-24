@@ -33,7 +33,9 @@ main{display:grid;grid-template-columns:1.6fr 1fr;gap:2vw;min-height:0}
 .board li.flash{background:rgba(242,181,48,.28)}
 .board li .r{font-family:'Barlow Condensed',sans-serif;font-size:clamp(20px,2vw,36px);text-align:center;color:#f2b530}
 .board li:nth-child(1) .r{color:#ffd45c;text-shadow:0 0 14px rgba(255,212,92,.6)}.board li:nth-child(2) .r{color:#d9dde3}.board li:nth-child(3) .r{color:#d99a6a}
-.board li .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board li .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.1}
+.board li .n small{display:block;font-size:.55em;font-weight:700;opacity:.55;overflow:hidden;text-overflow:ellipsis}
+#feed i{font-style:normal;opacity:.6}
 .dots{display:grid;grid-template-columns:repeat(12,1fr);gap:.35vw}
 .dots i{height:1.3vw;max-height:22px;min-height:10px;border-radius:6px;background:rgba(255,255,255,.1)}
 .dots i.on{background:#f2b530;box-shadow:0 0 8px rgba(242,181,48,.6)}
@@ -59,13 +61,13 @@ footer{display:flex;justify-content:space-between;font-size:clamp(11px,.9vw,15px
 <div class="wrap">
 <header>
 <div><h1>Children hunt <span>&middot; live</span></h1></div>
-<div class="stats"><div class="stat"><b id="sp">0</b><span>explorers</span></div><div class="stat"><b id="sf">0</b><span>children found</span></div><div class="stat"><b id="sc">0</b><span>found all 12</span></div></div>
+<div class="stats"><div class="stat"><b id="sp">0</b><span>groups</span></div><div class="stat"><b id="sf">0</b><span>children found</span></div><div class="stat"><b id="sc">0</b><span>found all 12</span></div></div>
 <span class="live" id="live"><span>LIVE</span></span>
 </header>
 <main>
 <section class="panel"><h2>Scoreboard</h2><ol class="board" id="board"><li class="empty">Loading&hellip;</li></ol></section>
 <div class="side">
-<section class="panel"><h2>The 12 children</h2><div class="figs"><div class="fig"><i>#1</i><b>Mango</b><span>0</span></div><div class="fig"><i>#2</i><b>Monsoon</b><span>0</span></div><div class="fig"><i>#3</i><b>Lantern</b><span>0</span></div><div class="fig"><i>#4</i><b>Gecko</b><span>0</span></div><div class="fig"><i>#5</i><b>Coconut</b><span>0</span></div><div class="fig"><i>#6</i><b>Thunder</b><span>0</span></div><div class="fig"><i>#7</i><b>Pebble</b><span>0</span></div><div class="fig"><i>#8</i><b>Bamboo</b><span>0</span></div><div class="fig"><i>#9</i><b>Comet</b><span>0</span></div><div class="fig"><i>#10</i><b>Lotus</b><span>0</span></div><div class="fig"><i>#11</i><b>Echo</b><span>0</span></div><div class="fig"><i>#12</i><b>Rocket</b><span>0</span></div></div></section>
+<section class="panel"><h2>The 12 children</h2><div class="figs"><div class="fig"><i>Child</i><b>#1</b><span>0</span></div><div class="fig"><i>Child</i><b>#2</b><span>0</span></div><div class="fig"><i>Child</i><b>#3</b><span>0</span></div><div class="fig"><i>Child</i><b>#4</b><span>0</span></div><div class="fig"><i>Child</i><b>#5</b><span>0</span></div><div class="fig"><i>Child</i><b>#6</b><span>0</span></div><div class="fig"><i>Child</i><b>#7</b><span>0</span></div><div class="fig"><i>Child</i><b>#8</b><span>0</span></div><div class="fig"><i>Child</i><b>#9</b><span>0</span></div><div class="fig"><i>Child</i><b>#10</b><span>0</span></div><div class="fig"><i>Child</i><b>#11</b><span>0</span></div><div class="fig"><i>Child</i><b>#12</b><span>0</span></div></div></section>
 <section class="panel"><h2>Latest finds</h2><ul class="feed" id="feed"></ul></section>
 </div>
 </main>
@@ -75,18 +77,18 @@ footer{display:flex;justify-content:space-between;font-size:clamp(11px,.9vw,15px
 function rpc(fn,args){var h={'Content-Type':'application/json','apikey':SB_KEY};if(SB_KEY.indexOf('eyJ')===0)h.Authorization='Bearer '+SB_KEY;return fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:h,body:JSON.stringify(args||{})}).then(function(r){if(!r.ok)throw new Error('http '+r.status);return r.json()})}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function ago(t){var s=Math.max(0,(Date.now()-new Date(t).getTime())/1000);if(s<45)return'just now';if(s<3600)return Math.round(s/60)+' min ago';return Math.round(s/3600)+' h ago'}
-var NAMES=["Mango", "Monsoon", "Lantern", "Gecko", "Coconut", "Thunder", "Pebble", "Bamboo", "Comet", "Lotus", "Echo", "Rocket"];
+
 var prev={},firstLoad=true,live=document.getElementById('live');
 function dots(n){var s='';for(var i=0;i<12;i++)s+='<i class="'+(i<n?'on':'')+'"></i>';return s}
 function draw(d){
-document.getElementById('sp').textContent=d.players;document.getElementById('sf').textContent=d.finds;
+document.getElementById('sp').textContent=d.groups;document.getElementById('sf').textContent=d.finds;
 var done=d.board.filter(function(r){return r.found>=12}).length;document.getElementById('sc').textContent=done;
 var b=document.getElementById('board');
-if(!d.board.length){b.innerHTML='<li class="empty">Waiting for the first explorers&hellip;</li>'}
-else{b.innerHTML=d.board.slice(0,12).map(function(r){var f=!firstLoad&&prev[r.name]!==undefined&&prev[r.name]<r.total;return '<li class="'+(f?'flash':'')+'"><span class="r">'+r.rank+'</span><span class="n">'+esc(r.name)+'</span><span class="dots">'+dots(r.found)+'</span><span class="p">'+r.total+'</span></li>'}).join('')}
+if(!d.board.length){b.innerHTML='<li class="empty">Waiting for the first groups&hellip;</li>'}
+else{b.innerHTML=d.board.slice(0,12).map(function(r){var f=!firstLoad&&prev[r.name]!==undefined&&prev[r.name]<r.total;return '<li class="'+(f?'flash':'')+'"><span class="r">'+r.rank+'</span><span class="n">'+esc(r.name)+'<small>'+esc((r.members||[]).join(', '))+'</small></span><span class="dots">'+dots(r.found)+'</span><span class="p">'+r.total+'</span></li>'}).join('')}
 prev={};d.board.forEach(function(r){prev[r.name]=r.total});
 d.per_figure.forEach(function(p,i){var el=document.querySelectorAll('.fig span')[i];if(el)el.textContent=p.count});
-var fe=document.getElementById('feed');fe.innerHTML=d.recent.length?d.recent.slice(0,9).map(function(x){return '<li><span><b>'+esc(x.name)+'</b> found '+esc(NAMES[x.figure_id-1]||('#'+x.figure_id))+'</span><small>'+ago(x.at)+'</small></li>'}).join(''):'<li><span>No finds yet</span></li>';
+var fe=document.getElementById('feed');fe.innerHTML=d.recent.length?d.recent.slice(0,9).map(function(x){return '<li><span><b>'+esc(x.group)+'</b> found child #'+x.figure_id+(x.member?' <i>('+esc(x.member)+')</i>':'')+'</span><small>'+ago(x.at)+'</small></li>'}).join(''):'<li><span>No finds yet</span></li>';
 document.getElementById('upd').textContent='Updated '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
 setTimeout(function(){document.querySelectorAll('.board li.flash').forEach(function(l){l.classList.remove('flash')})},1600);firstLoad=false}
 function tick(){rpc('hunt_status',{p_limit:50}).then(function(d){live.classList.remove('off');live.lastChild.textContent='LIVE';draw(d)}).catch(function(){live.classList.add('off');live.lastChild.textContent='Reconnecting\u2026'})}
